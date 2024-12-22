@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ai-image-generator
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd backend && python app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: MONGODB_URI
+        sync: false 

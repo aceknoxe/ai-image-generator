@@ -1,3 +1,4 @@
+import os
 from flask import Flask, send_from_directory, jsonify
 from flask_cors import CORS
 from routes.image_routes import image_routes
@@ -5,13 +6,12 @@ from config import Config
 
 app = Flask(__name__)
 
-# Update CORS configuration
+# Update CORS configuration for production
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:8000"],
+        "origins": ["https://your-frontend-domain.com", "http://localhost:8000"],
         "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type"],
-        "supports_credentials": True
+        "allow_headers": ["Content-Type"]
     }
 })
 
@@ -33,4 +33,6 @@ def serve_files(path):
     return send_from_directory(app.static_folder, path)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    # Get port from environment variable or default to 5000
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
