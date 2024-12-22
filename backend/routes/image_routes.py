@@ -11,9 +11,28 @@ import base64
 image_routes = Blueprint('image_routes', __name__)
 logger = logging.getLogger(__name__)
 
-# Configure Google AI
+# Configure Google AI with safety settings
 genai.configure(api_key=Config.GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro')
+
+# Updated Gemini model configuration
+generation_config = {
+    "temperature": 0.9,
+    "top_p": 1,
+    "top_k": 1,
+    "max_output_tokens": 2048,
+}
+
+safety_settings = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
+]
+
+# Initialize the model with configurations
+model = genai.GenerativeModel(model_name="gemini-pro",
+                            generation_config=generation_config,
+                            safety_settings=safety_settings)
 
 @image_routes.route('/', methods=['POST'])
 def generate_image():
@@ -27,7 +46,6 @@ def generate_image():
         logger.debug(f"Generating image for prompt: {prompt}")
         
         # For now, let's use a placeholder image service
-        # You can replace this with any other image generation API
         image_url = f"https://picsum.photos/512/512"  # Random placeholder image
         
         # Download the image and convert to base64

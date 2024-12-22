@@ -1,23 +1,20 @@
 // gallery.js
+const API_URL = 'https://ai-image-generator-r93p.onrender.com';
+
 document.addEventListener('DOMContentLoaded', async function() {
     const galleryGrid = document.getElementById('gallery-grid');
     
     try {
-        const response = await fetch('http://localhost:5000/api/images', {
+        const response = await fetch(`${API_URL}/api/images`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
-            },
-            mode: 'cors'
+            }
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        
         const images = await response.json();
         
-        if (!images || images.length === 0) {
+        if (images.length === 0) {
             galleryGrid.innerHTML = `
                 <div class="no-images">
                     <p>No images generated yet. Go to the Create page to generate some!</p>
