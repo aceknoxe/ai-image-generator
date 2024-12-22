@@ -1,0 +1,29 @@
+# Byte-compiled / compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables (if you use dotenv)
+*.env
+
+# Virtual environments
+venv/
+ENV/
+.venv/
+env/
+.ENV/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# VSCode settings (optional)
+.vscode/
+
+# Operating system files (optional)
+.DS_Store
+Thumbs.db 
