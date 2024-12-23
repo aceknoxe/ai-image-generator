@@ -5,5 +5,7 @@ requests==2.28.1
 Pillow==9.4.0
 python-dotenv==0.21.0
 gunicorn==20.1.0
-imaginairy==9.6.0
-torch==2.0.1 
+imaginairy==8.3.1
+torch==1.13.1
+transformers==4.25.1
+accelerate==0.15.0
