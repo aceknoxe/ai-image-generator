@@ -6,3 +6,4 @@ Pillow==9.4.0
 python-dotenv==0.21.0
 gunicorn==20.1.0
 imaginairy==9.6.0
+torch==2.0.1 

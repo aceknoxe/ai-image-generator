@@ -5,15 +5,11 @@ import logging
 from PIL import Image as PILImage
 from io import BytesIO
 import base64
-from imaginairy import imagine, ImaginePrompt, LazyLoadingImage
+from imaginairy import imagine, ImaginePrompt
 import os
 
 image_routes = Blueprint('image_routes', __name__)
 logger = logging.getLogger(__name__)
-
-# Ensure output directory exists
-OUTPUT_DIR = 'generated_images'
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 @image_routes.route('/', methods=['POST'])
 def generate_image():
@@ -26,13 +22,13 @@ def generate_image():
 
         logger.debug(f"Generating image for prompt: {prompt}")
         
-        # Generate image using imaginAIry
+        # Generate image using imaginAIry with Python 3.10 compatible settings
         prompt_obj = ImaginePrompt(
             prompt=prompt,
             width=512,
             height=512,
-            seed=None,  # Random seed
-            steps=50,
+            seed=None,
+            steps=30,  # Reduced steps for better compatibility
             upscale=False
         )
         
