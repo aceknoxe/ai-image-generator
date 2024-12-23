@@ -1,38 +1,19 @@
 from flask import Blueprint, request, jsonify
-import google.generativeai as genai
 from models.image import Image
 from config import Config
 import logging
-import requests
 from PIL import Image as PILImage
 from io import BytesIO
 import base64
+from imaginairy import imagine, ImaginePrompt, LazyLoadingImage
+import os
 
 image_routes = Blueprint('image_routes', __name__)
 logger = logging.getLogger(__name__)
 
-# Configure Google AI with safety settings
-genai.configure(api_key=Config.GOOGLE_API_KEY)
-
-# Updated Gemini model configuration
-generation_config = {
-    "temperature": 0.9,
-    "top_p": 1,
-    "top_k": 1,
-    "max_output_tokens": 2048,
-}
-
-safety_settings = [
-    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
-]
-
-# Initialize the model with configurations
-model = genai.GenerativeModel(model_name="gemini-pro",
-                            generation_config=generation_config,
-                            safety_settings=safety_settings)
+# Ensure output directory exists
+OUTPUT_DIR = 'generated_images'
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 @image_routes.route('/', methods=['POST'])
 def generate_image():
@@ -45,12 +26,26 @@ def generate_image():
 
         logger.debug(f"Generating image for prompt: {prompt}")
         
-        # For now, let's use a placeholder image service
-        image_url = f"https://picsum.photos/512/512"  # Random placeholder image
+        # Generate image using imaginAIry
+        prompt_obj = ImaginePrompt(
+            prompt=prompt,
+            width=512,
+            height=512,
+            seed=None,  # Random seed
+            steps=50,
+            upscale=False
+        )
         
-        # Download the image and convert to base64
-        response = requests.get(image_url)
-        img = PILImage.open(BytesIO(response.content))
+        # Generate the image
+        generated_images = list(imagine(prompt_obj))
+        
+        if not generated_images:
+            return jsonify({'error': 'Failed to generate image'}), 500
+            
+        # Get the first generated image
+        img = generated_images[0]
+        
+        # Convert to base64
         buffered = BytesIO()
         img.save(buffered, format="PNG")
         img_str = base64.b64encode(buffered.getvalue()).decode()
